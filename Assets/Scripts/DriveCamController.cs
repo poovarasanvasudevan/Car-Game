@@ -15,13 +15,19 @@ public class DriveCamController : MonoBehaviour {
 	public Transform target;//target to follow
 	
 	public GameObject car;//get the car for other stuff like speed
-	
+
+	public GameObject zoomPlane;//the sniper feature plane
 	
 	void Start(){
 		target = GameObject.Find ("Follow").transform;
 		
 		car = GameObject.FindGameObjectWithTag("Player");
-		
+
+		//the sniper feature disabled when this script is activated
+		Color temp = zoomPlane.renderer.material.color;
+		temp.a = 0;
+		zoomPlane.renderer.material.color = temp;
+		camera.fieldOfView = 60f;
 	}
 
 	/*Private variables*/
