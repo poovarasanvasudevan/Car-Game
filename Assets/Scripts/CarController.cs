@@ -86,29 +86,33 @@ public class CarController : MonoBehaviour {
 		//Cheats need to be added in Update or it causes errors.
 		//Besides it does not move car, it only changes the multiple for torque which is used in fixedUpdate
 		//but this needs to called every frame. So leave it here.
+
 		CheatsControl ();
 	}
 	
 	void CheatsControl(){
 		//cheats in Use
 		AllCheats cheats = allScripts.GetComponent<AllCheats>();
-		if(Input.GetKeyDown(KeyCode.LeftShift)&&cheats.nitroAllowed){
+		if(Input.GetKeyDown(KeyCode.LeftShift) && cheats.nitroAllowed){
 			maxSpeed*=4;
 			torqueMultiplier=4;
 		}
 		
-		if(Input.GetKeyUp(KeyCode.LeftShift)&&cheats.nitroAllowed){
+		if(Input.GetKeyUp(KeyCode.LeftShift) && cheats.nitroAllowed){
 			maxSpeed/=4;
 			torqueMultiplier=1;
 		}
 		
-		if(Input.GetKeyDown(KeyCode.E)&&cheats.jumpAllowed){
+		if(Input.GetKeyDown(KeyCode.E) && cheats.jumpAllowed){
 			rigidbody.AddForce(Vector3.up*1000000);
 			ejump = true;
 		}
+		airplaneMode = cheats.airFly;
 		forSingleJump = !cheats.jumpAllowed;
 	}
-	
+
+	bool airplaneMode;
+
 	void WheelPosition(){
 		RaycastHit hit;
 		Vector3 wheelPos;
@@ -363,13 +367,19 @@ public class CarController : MonoBehaviour {
 				}
 			}
 		}
-		
+
+		if(airplaneMode){
+			transform.Rotate(Vector3.up * Input.GetAxisRaw("Horizontal"));
+			rigidbody.AddRelativeForce(Vector3.forward * Input.GetAxisRaw ("Horizontal")*10000);
+		}
+
 		//reset
-		if(Input.GetKeyDown("q")){
+		if(Input.GetKey(KeyCode.Q)){
 			transform.position = new Vector3(0, 15, 0);
 			transform.rotation = Quaternion.identity;
 			rigidbody.Sleep ();
 		}
+
 		/*
 		 * When max speed reached and if you hold back key without letting go of front key car will lock at max speed
 		 * 
