@@ -81,8 +81,8 @@ public class NetworkManager : MonoBehaviour {
 		//hide the 3D text on local player as it interferes with gun shooting
 		myCar.GetComponentInChildren<TextMesh>().renderer.enabled = false;
 
-		//MSK stuff
-		//Instantiate (Resources.Load ("GunCam"), new Vector3 (0f, 10f, 0f), Quaternion.identity);
+		//HitBorderShow
+		GameObject.Find ("OnHitTexture").GetComponent<ShowHitBorder> ().enabled = true;
 
 		gameViewCam.enabled = false;
 
