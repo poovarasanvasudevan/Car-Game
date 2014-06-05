@@ -23,7 +23,11 @@ public class NetworkManager : MonoBehaviour {
 	public Material Green;
 
 	void  Awake(){
-		MasterServer.ipAddress = "192.168.0.19";
+		//MSK PC
+		//MasterServer.ipAddress = "192.168.0.19";
+		//Guri School PC
+		MasterServer.ipAddress = "10.82.32.35";
+
 		MasterServer.port = 23466;
 	}
 

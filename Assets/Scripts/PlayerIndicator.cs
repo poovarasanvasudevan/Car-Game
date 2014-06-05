@@ -5,9 +5,10 @@ public class PlayerIndicator : MonoBehaviour {
 	Camera camMain,camMandeep,camMustafa;
 	bool showMaps;
 	Transform myCar;
+	float ArrowSize=35;
 	void Start() {
 		myCar = this.gameObject.transform.parent.gameObject.transform;
-		transform.localScale = new Vector3 (150, 1, 150);
+
 		camMain=GameObject.Find ("MiniMap-main").GetComponent<Camera>();
 		camMandeep=GameObject.Find ("MiniMap-mandeep").GetComponent<Camera>();
 		camMustafa=GameObject.Find ("MiniMap-mustafa").GetComponent<Camera>();
@@ -18,10 +19,16 @@ public class PlayerIndicator : MonoBehaviour {
 	}
 
 	void Update () {
+
+		//change the value of arrow size and not this
+		transform.localScale = Vector3.Lerp (transform.localScale, new Vector3 (ArrowSize, 1, ArrowSize), 2*Time.deltaTime);
+
 		transform.rotation = Quaternion.identity;
+		float rotY=myCar.rotation.eulerAngles.y;
 		Vector3 pos = myCar.position;
 		pos.y += 1000f;
 		transform.position = pos;
+		transform.Rotate (Vector3.up*(rotY+90));
 
 		if(Input.GetKeyDown (KeyCode.M)){
 			showMaps=!showMaps;

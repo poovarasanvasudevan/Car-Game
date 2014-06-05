@@ -378,7 +378,7 @@ public class CarController : MonoBehaviour {
 		if(airplaneMode && !onGround){
 			transform.Rotate(Vector3.up * Input.GetAxisRaw("Horizontal"));
 			rigidbody.AddRelativeForce(Vector3.forward * Input.GetAxisRaw ("Horizontal")*20000);
-			print (rigidbody.velocity.magnitude.ToString()+" and "+rigidbody.angularVelocity.magnitude.ToString());
+			//print (rigidbody.velocity.magnitude.ToString()+" and "+rigidbody.angularVelocity.magnitude.ToString());
 		}
 
 		//reset
