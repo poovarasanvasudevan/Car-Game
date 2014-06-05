@@ -109,6 +109,7 @@ public class CarController : MonoBehaviour {
 		}
 		airplaneMode = cheats.airFly;
 		forSingleJump = !cheats.jumpAllowed;
+		DeveloperMenuOpened = cheats.showDeveloperMenu;
 	}
 
 	bool airplaneMode;
@@ -233,7 +234,7 @@ public class CarController : MonoBehaviour {
 		//print ("SIDEWAYS FRIC: "+wheelRL.sidewaysFriction.stiffness+" FORWARD FRIC: "+wheelRL.forwardFriction.stiffness);
 	}
 
-	bool ejump;
+	bool ejump, onGround;
 	void CalcDownForceOnCar(){
 		RaycastHit hit;
 		int carSpeed = (int) rigidbody.velocity.magnitude;
@@ -242,6 +243,9 @@ public class CarController : MonoBehaviour {
 			//hit.point is the point the raycast is hitting
 			rigidbody.AddForce(0,carSpeed*1000*-1,0);
 			//print ("1000");
+
+			//by me
+			onGround=true;
 		} else{//car is in air
 			int force = 175;
 			rigidbody.AddForce(0,carSpeed*force*-1,0);
@@ -249,6 +253,9 @@ public class CarController : MonoBehaviour {
 				rigidbody.AddForceAtPosition(new Vector3(0, carSpeed*6,0), forceUp.position);
 			}
 			//print (force);
+
+			//by me
+			onGround=false;
 		}
 	}
 	
@@ -368,7 +375,7 @@ public class CarController : MonoBehaviour {
 			}
 		}
 
-		if(airplaneMode){
+		if(airplaneMode && !onGround){
 			transform.Rotate(Vector3.up * Input.GetAxisRaw("Horizontal"));
 			rigidbody.AddRelativeForce(Vector3.forward * Input.GetAxisRaw ("Horizontal")*20000);
 			print (rigidbody.velocity.magnitude.ToString()+" and "+rigidbody.angularVelocity.magnitude.ToString());
@@ -385,5 +392,18 @@ public class CarController : MonoBehaviour {
 		 * When max speed reached and if you hold back key without letting go of front key car will lock at max speed
 		 * 
 		 */
+	}
+
+	bool DeveloperMenuOpened;
+
+	void ChangeTag(){
+		if(gameObject.tag=="Player") gameObject.tag="raycastTarget";
+		else gameObject.tag="Player";
+	}
+
+	void OnGUI(){
+		if(DeveloperMenuOpened){
+			if(GUI.Button(new Rect((Screen.width-200)/2,(Screen.height-400)/2+200,200,35),"Current Tag is "+gameObject.tag)) ChangeTag();
+		}
 	}
 }

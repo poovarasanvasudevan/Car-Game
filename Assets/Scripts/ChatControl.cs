@@ -69,6 +69,8 @@ public class ChatControl : MonoBehaviour {
 		if(Input.GetKeyDown(KeyCode.BackQuote))
 			showChatTextField = !showChatTextField;
 		if(Input.GetKeyDown(KeyCode.Backspace)&&Network.isServer) networkView.RPC ("UnlockMap", RPCMode.AllBuffered, new object[]{serverMandeep,lockedDoorMandeep,openDoorMandeep});
+		//to just change chat setting with / rather than clicking on top
+		if(Input.GetKeyDown (KeyCode.KeypadDivide)) showEditOptions = !showEditOptions;
 	}
 	
 	public void OnGUI(){
@@ -183,11 +185,9 @@ public class ChatControl : MonoBehaviour {
 		
 	}
 	
-	string ConvertToString( float no){
-		string str = no.ToString ();
-		if(no==100) return "100";
-		else if(str.Length<=2) return str;
-		else return str.Substring(0,2);
+	string ConvertToString( float inFLoat){
+		int no = (int)inFLoat;
+		return no.ToString ();
 	}
 	
 	string StyleChangePress(string str){

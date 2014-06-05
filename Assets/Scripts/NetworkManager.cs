@@ -18,7 +18,10 @@ public class NetworkManager : MonoBehaviour {
 	/*******************/
 
 	public bool playerHasName;
-	
+
+	//for personal green indicator
+	public Material Green;
+
 	void  Awake(){
 		MasterServer.ipAddress = "192.168.0.19";
 		MasterServer.port = 23466;
@@ -78,6 +81,9 @@ public class NetworkManager : MonoBehaviour {
 		//hide the player name locally so it wont interrupt gameplay but show on others screen
 		myCar.GetComponentInChildren<GUIText> ().enabled = false;
 
+		//change personal car indicator to green
+		myCar.GetComponentInChildren<PlayerIndicator> ().changeColorForPersonalCar (Green);
+
 		//hide the 3D text on local player as it interferes with gun shooting
 		myCar.GetComponentInChildren<TextMesh>().renderer.enabled = false;
 
@@ -86,6 +92,11 @@ public class NetworkManager : MonoBehaviour {
 
 		gameViewCam.enabled = false;
 
+		//enable compass
+		GameObject.Find ("Compass-Plane").GetComponent<CompassRotation> ().enabled = true;
+
+		//show Instructions at start
+		this.gameObject.GetComponent<AllCheats> ().showInstructions = true;
 	}
 	
 	public IEnumerator RefreshHostList(){

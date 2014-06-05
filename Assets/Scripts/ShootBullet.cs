@@ -20,6 +20,7 @@ public class ShootBullet : MonoBehaviour {
 	void Start(){
 		//updateToPlayer = GameObject.FindGameObjectWithTag ("playerUpdates").guiText;
 		mainCam = GameObject.FindGameObjectWithTag ("MainCamera").camera;
+		shootLength *= 5;
 	}
 	
 	void Update () {
