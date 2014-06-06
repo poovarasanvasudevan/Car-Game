@@ -3,11 +3,10 @@ using System.Collections;
 
 public class NetworkManager : MonoBehaviour {
 
-	private string reg_game_name = "CarGame_gurinderhans";
+	string reg_game_name = "CarGame_gurinderhans";
 	public float refresReqLength = 3.0f;
 	public HostData[] hostData;
-	private string car_choosen;
-	private string color_choosen;
+	string car_choosen,color_choosen;
 
 	/********************/
 	public Transform spawnOne;
@@ -18,24 +17,33 @@ public class NetworkManager : MonoBehaviour {
 	/*******************/
 
 	public bool playerHasName;
-
-	//for personal green indicator
 	public Material Green;
+
+	//for change car
+	string NewCarChoosen;
+	bool isCarChanged,showCarChange;
+	int myCamDepth;
 
 	void  Awake(){
 		//MSK PC
-		//MasterServer.ipAddress = "192.168.0.19";
+		MasterServer.ipAddress = "192.168.0.19";
 		//Guri School PC
-		MasterServer.ipAddress = "10.82.32.35";
+		//MasterServer.ipAddress = "10.82.32.35";
 
 		MasterServer.port = 23466;
+	}
+
+	void Update(){
+		if(Input.GetKeyDown (KeyCode.KeypadPeriod) && !showCarChange){
+			showCarChange=true;
+		}
 	}
 
 
 	public Camera gameViewCam;
 
-	private Vector3 spawnPosition;
-	private Vector3 CalcSpawnPos(){
+	Vector3 spawnPosition;
+	Vector3 CalcSpawnPos(){
 		int randomNum = Random.Range (0, 5);
 
 		if(randomNum == 0){
@@ -55,52 +63,42 @@ public class NetworkManager : MonoBehaviour {
 		return spawnPosition;
 	}
 
-	private void SpawnPlayer(){
+	GameObject myCam,myCar;
 
+	void SpawnPlayer(){
 		Vector3 spawnPos = CalcSpawnPos ();
 		Debug.Log ("Spawning Player");
-		GameObject myCar = (GameObject) Network.Instantiate (Resources.Load(car_choosen+color_choosen), spawnPos, Quaternion.identity, 0);
-		
-		GameObject myCam = (GameObject) Instantiate(Resources.Load("DriveCam"), new Vector3(0f, 10f, 0f), Quaternion.identity);
-		//((MonoBehaviour)myCam.GetComponent ("CarCameraController")).enabled = true;//for getting .js files
+		if (showCarChange) myCar = (GameObject) Network.Instantiate (Resources.Load(NewCarChoosen+color_choosen), spawnPos, Quaternion.identity, 0);
+		else myCar = (GameObject) Network.Instantiate (Resources.Load(car_choosen+color_choosen), spawnPos, Quaternion.identity, 0);
+		myCam = (GameObject) Instantiate(Resources.Load("DriveCam"), new Vector3(0f, 10f, 0f), Quaternion.identity);
 
+		myCam.GetComponent<Camera> ().depth = myCamDepth;
 		myCam.GetComponent<DriveCamController> ().enabled = true;
-
-		myCar.GetComponent<CarController> ().enabled = true;//for getting .cs files
+		myCar.GetComponent<CarController> ().enabled = true;
 		myCar.GetComponentInChildren<Health> ().enabled = true;
-
-		//enable the gun parts of car
-
-
-		//myCar.GetComponentInChildren<GunMovement> ().enabled = true;
-		//myCar.GetComponentInChildren<CrossHair> ().enabled = true;
-		//myCar.GetComponentInChildren<ShootBullet> ().enabled = true;
-
-		//keep this in case unity gives problem and gives you ability to control other players guns
-		/*GameObject myGun = (GameObject) myCar.transform.FindChild ("gun TBS 001C").gameObject;
-		myGun.GetComponent<GunMovement> ().enabled = true;
-		myGun.GetComponent<CrossHair> ().enabled = true;
-		myGun.GetComponent<ShootBullet> ().enabled = true;*/
-		
-		//hide the player name locally so it wont interrupt gameplay but show on others screen
 		myCar.GetComponentInChildren<GUIText> ().enabled = false;
-
-		//change personal car indicator to green
 		myCar.GetComponentInChildren<PlayerIndicator> ().changeColorForPersonalCar (Green);
-
-		//hide the 3D text on local player as it interferes with gun shooting
 		myCar.GetComponentInChildren<TextMesh>().renderer.enabled = false;
 
-		//HitBorderShow
 		GameObject.Find ("OnHitTexture").GetComponent<ShowHitBorder> ().enabled = true;
+		GameObject.Find ("Compass-Plane").GetComponent<CompassRotation> ().enabled = true;
 
 		gameViewCam.enabled = false;
 
-		//enable compass
+		this.gameObject.GetComponent<AllCheats> ().showInstructions = true;
+	}
+	void DestroyPlayer(){
+		Debug.Log ("Switching Cars");
+		myCam.GetComponent<GameModeManager> ().enabled = false;
+		myCam.GetComponent<DriveCamController> ().enabled = false;;
+		myCar.GetComponent<CarController> ().enabled = false;;
+		myCar.GetComponentInChildren<Health> ().enabled = false;
+
+		GameObject.Find ("OnHitTexture").GetComponent<ShowHitBorder> ().enabled = true;
 		GameObject.Find ("Compass-Plane").GetComponent<CompassRotation> ().enabled = true;
 
-		//show Instructions at start
-		this.gameObject.GetComponent<AllCheats> ().showInstructions = true;
+		GameObject.Destroy (myCam);
+		GameObject.Destroy (myCar);
 	}
 	
 	public IEnumerator RefreshHostList(){
@@ -123,7 +121,7 @@ public class NetworkManager : MonoBehaviour {
 	//Call Backs from the Client and Server
 	/**************************************************************/
 
-	private void StartServer(){
+	void StartServer(){
 		Network.InitializeServer (32, 25000, false);
 		MasterServer.RegisterHost (reg_game_name, "Unity3D Game", "Enjoy!");
 	}
@@ -140,7 +138,7 @@ public class NetworkManager : MonoBehaviour {
 	}
 
 	void OnConnectedToServer(){
-		SpawnPlayer ();
+		//SpawnPlayer ();
 	}
 	
 	void OnDisconnectedFromServer(NetworkDisconnection info){
@@ -239,6 +237,7 @@ public class NetworkManager : MonoBehaviour {
 			if(GUI.Button(new Rect(25f, 15f, 150f, 30f), "Create Server")){
 				// Start server function here
 				StartServer();
+				myCamDepth=0;
 				isServerStarted = true;
 			}
 		}
@@ -252,6 +251,7 @@ public class NetworkManager : MonoBehaviour {
 			for(int i = 0; i < hostData.Length; i++){
 				if(GUI.Button(new Rect(Screen.width/2, 65f+(30f*i), 300f, 30f), hostData[i].gameName)){
 					Network.Connect(hostData[i]);
+					myCamDepth=0;
 					isServerStarted = true;
 				}
 			}
@@ -268,31 +268,48 @@ public class NetworkManager : MonoBehaviour {
 		}
 	}
 
+	void ChangeCar(){
+		GUI.Box(new Rect (25f, 25f, 250f, 240f), "CHOOSE YOUR CAR:");
+		if(GUI.Button( new Rect(50f, 50f, 200f, 30f) , "CHEVROLET CAMARO")){
+			NewCarChoosen = "CHEVROLET_CAMARO/";
+			isCarChanged = true;
+		} else if(GUI.Button( new Rect(50f, 85f, 200f, 30f) , "WAEZ CAR")){
+			NewCarChoosen = "waez_buksh_26179_assignsubmission_file_waezcar2/";
+			isCarChanged = true;
+		} else if(GUI.Button( new Rect(50f, 120f, 200f, 30f) , "McLaren MP4-12C N090211")){
+			NewCarChoosen = "Car McLaren MP4-12C N090211/";
+			isCarChanged = true;
+		} else if(GUI.Button( new Rect(50f, 155f, 200f, 30f) , "California Ferrari")){
+			NewCarChoosen = "California Ferrari/";
+			isCarChanged = true;
+		} else if(GUI.Button( new Rect(50f, 190f, 200f, 30f) , "MERCIELAGO640")){
+			NewCarChoosen = "MERCIELAGO640/";
+			isCarChanged = true;
+		} else if(GUI.Button( new Rect(50f, 225f, 200f, 30f) , "Mr.Powells JetCar")){
+			NewCarChoosen = "jetcar/";
+			isCarChanged = true;
+		}
+		if(isCarChanged){
+			myCamDepth+=1;
+			DestroyPlayer ();
+			SpawnPlayer ();
+			showCarChange=false;
+		}
+
+	}
+
 	//GUI STUFF
-	private bool isCarChosen;
-	private bool isColorChosen;
-	private bool isServerStarted;
+	bool isCarChosen,isColorChosen,isServerStarted;
 
 	public void OnGUI(){
 
-		//print (myName);
+		if(Network.isServer) GUILayout.Label("Running as a server.");
+		else if(Network.isClient) GUILayout.Label("Running as a client.");
 
-		if(Network.isServer){
-			GUILayout.Label("Running as a server.");
-		} else if(Network.isClient){
-			GUILayout.Label("Running as a client.");
-		}
-
-		if(!isCarChosen){
-			ChooseCar();
-		} else {
-			if(!isColorChosen){
-				ChooseColor();
-			} else {
-				if(!playerHasName) GivePlayerName();
-				else
-					if(!isServerStarted) ServerMenu();
-			}
-		}
+		if(!isCarChosen) ChooseCar();
+		else if(!isColorChosen) ChooseColor();
+		else if(!playerHasName) GivePlayerName();
+		else if(!isServerStarted) ServerMenu();
+		else if(showCarChange) ChangeCar();
 	}
 }
