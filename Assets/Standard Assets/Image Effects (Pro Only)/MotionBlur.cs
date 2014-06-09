@@ -13,7 +13,7 @@ public class MotionBlur : ImageEffectBase
 {
 	public float blurAmount = 0.8f;
 	public bool extraBlur = false;
-	
+
 	private RenderTexture accumTexture;
 	
 	override protected void Start()
@@ -68,5 +68,9 @@ public class MotionBlur : ImageEffectBase
 		// Render the image using the motion blur shader
 		Graphics.Blit (source, accumTexture, material);
 		Graphics.Blit (accumTexture, destination);
+	}
+
+	void Update(){
+		//do something
 	}
 }

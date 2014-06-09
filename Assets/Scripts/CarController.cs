@@ -46,7 +46,9 @@ public class CarController : MonoBehaviour {
 	//we'll give these values to DriveCam for distance behind and up b/c its going to be different for each car
 	public float carCamPosUp;
 	public float carCamPosBehind;
-	
+
+
+	GameObject myCam;
 	
 	/*
 	 * Cool IDEAS TODO
@@ -67,7 +69,7 @@ public class CarController : MonoBehaviour {
 		
 		//For Cheats
 		allScripts = GameObject.Find ("_SCRIPTS");
-		
+		myCam = GameObject.Find ("CamFollow").transform.parent.gameObject;
 	}
 	
 	void Update(){
@@ -86,7 +88,7 @@ public class CarController : MonoBehaviour {
 		//Cheats need to be added in Update or it causes errors.
 		//Besides it does not move car, it only changes the multiple for torque which is used in fixedUpdate
 		//but this needs to called every frame. So leave it here.
-		
+
 		CheatsControl ();
 	}
 	
@@ -109,6 +111,12 @@ public class CarController : MonoBehaviour {
 		}
 		airplaneMode = cheats.airFly;
 		forSingleJump = !cheats.jumpAllowed;
+		if(cheats.noBlur) myCam.GetComponent<MotionBlur> ().blurAmount=0;
+		else{
+			//for blur
+			myCam.GetComponent<MotionBlur> ().blurAmount = Mathf.Lerp (myCam.GetComponent<MotionBlur> ().blurAmount, (rigidbody.velocity.magnitude / 250f) + (rigidbody.angularVelocity.magnitude / 10f), 0.25f * Time.deltaTime);
+
+		}
 		//DeveloperMenuOpened = cheats.showDeveloperMenu;
 	}
 	
@@ -393,6 +401,8 @@ public class CarController : MonoBehaviour {
 		 * When max speed reached and if you hold back key without letting go of front key car will lock at max speed
 		 * 
 		 */
+
+
 	}
 	
 	/*bool DeveloperMenuOpened;

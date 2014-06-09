@@ -37,6 +37,7 @@ public class DriveCamController : MonoBehaviour {
 
 		speedTextObj = GameObject.Find ("Car Speed");
 		speedText = speedTextObj.guiText;
+		this.GetComponent<MotionBlur> ().enabled = true;
 	}
 	
 	/*Private variables*/
