@@ -48,7 +48,8 @@ public class CarController : MonoBehaviour {
 	public float carCamPosBehind;
 
 
-	GameObject myCam;
+	[HideInInspector] public GameObject myCam;
+	[HideInInspector] public bool DrunkMode;
 	
 	/*
 	 * Cool IDEAS TODO
@@ -111,7 +112,11 @@ public class CarController : MonoBehaviour {
 		}
 		airplaneMode = cheats.airFly;
 		forSingleJump = !cheats.jumpAllowed;
-		if(cheats.noBlur) myCam.GetComponent<MotionBlur> ().blurAmount=0;
+		//if(cheats.noBlur) myCam.GetComponent<MotionBlur> ().blurAmount=0;
+		if(DrunkMode){
+			myCam.GetComponent<MotionBlur> ().blurAmount=1;
+			print ("Here it is true too");
+		}
 		else{
 			//for blur
 			myCam.GetComponent<MotionBlur> ().blurAmount = Mathf.Lerp (myCam.GetComponent<MotionBlur> ().blurAmount, (rigidbody.velocity.magnitude / 250f) + (rigidbody.angularVelocity.magnitude / 10f), 0.25f * Time.deltaTime);
@@ -387,7 +392,7 @@ public class CarController : MonoBehaviour {
 			transform.Rotate(Vector3.up * Input.GetAxisRaw("Horizontal"));
 			print (transform.localEulerAngles);
 			rigidbody.AddRelativeForce(Vector3.forward * Input.GetAxisRaw ("Horizontal") * 150 * carSpeed);
-			print (rigidbody.velocity.magnitude+" and "+rigidbody.angularVelocity.magnitude);
+			//print (rigidbody.velocity.magnitude+" and "+rigidbody.angularVelocity.magnitude);
 		}
 		
 		//reset

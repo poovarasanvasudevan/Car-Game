@@ -69,8 +69,4 @@ public class MotionBlur : ImageEffectBase
 		Graphics.Blit (source, accumTexture, material);
 		Graphics.Blit (accumTexture, destination);
 	}
-
-	void Update(){
-		//do something
-	}
 }

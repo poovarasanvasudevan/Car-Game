@@ -13,7 +13,10 @@ public class ChatControl : MonoBehaviour {
 	
 	public GameObject hostMessageGameObj;
 	public GameObject main_scripts;
-	
+	GameObject myGaddi;
+
+	[HideInInspector] public bool DrunkMode;
+
 	void Start(){
 		//chatMessages.Add ("Welcome to the Multiplayer Car-Game!");
 		hostMessageGameObj = GameObject.FindGameObjectWithTag("HostMessage");
@@ -33,6 +36,7 @@ public class ChatControl : MonoBehaviour {
 		ApplyAllChanges ();
 		
 		main_scripts = GameObject.Find ("_SCRIPTS");
+		myGaddi = GameObject.FindGameObjectWithTag ("Player");
 	}
 	
 	
@@ -222,6 +226,11 @@ public class ChatControl : MonoBehaviour {
 			networkView.RPC ("UnlockMap", RPCMode.AllBuffered, new object[]{serverMustafa,lockedDoorMustafa,openDoorMustafa});
 			return true;
 		}
+		else if(txt=="drunk"){
+			//networkView.RPC ("PublicBoolUnlock", RPCMode.AllBuffered, new object[]{DrunkMode,"Drunk Mode is "});
+			PublicBoolUnlock (myGaddi.GetComponent<CarController>().DrunkMode,"Drunk Mode is ");
+			return true;
+		}
 		else return false;
 	}
 	
@@ -235,5 +244,12 @@ public class ChatControl : MonoBehaviour {
 			Instantiate (Resources.Load(openDoor), pos, rot);
 			theBool=true;
 		}
+	}
+
+
+	//[RPC]
+	void PublicBoolUnlock(bool theBool, string Str){
+		theBool = !theBool;
+		print (Str + theBool.ToString ());
 	}
 }

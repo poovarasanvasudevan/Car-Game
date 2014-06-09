@@ -4,8 +4,8 @@ using System.Collections;
 public class PauseMenu : MonoBehaviour {
 
 	
-	bool gamePaused=false;
-	string whereInPause=null;
+	public bool gamePaused;
+	string whereInPause;
 	
 	float menuX;
 	float menuY;

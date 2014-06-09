@@ -12,7 +12,7 @@ public class GunCameraMovement : MonoBehaviour {
 	Color colorForAlpha;
 	float fieldOfView;
 	float lerpSpeed=20f;
-	float mouseRotationMultiplier=1;
+	[HideInInspector] public float mouseRotationMultiplier=1;
 
 
 	GameObject car;//get the car for other stuff like speed
@@ -44,11 +44,11 @@ public class GunCameraMovement : MonoBehaviour {
 			if(Input.GetKeyDown(KeyCode.Z)){
 				if(showZoom){
 					showZoom=false;
-					mouseRotationMultiplier*=12;
+					mouseRotationMultiplier=12;
 				}
 				else{
 					showZoom=true;
-					mouseRotationMultiplier/=12;
+					mouseRotationMultiplier=1;
 				}
 			}
 			

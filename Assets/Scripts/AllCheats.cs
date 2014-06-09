@@ -63,16 +63,20 @@ public class AllCheats : MonoBehaviour {
 	}
 	
 	void Update(){
-		if(Input.GetKeyDown(KeyCode.O)&&developerMode){
+		if(this.GetComponent<PauseMenu>().gamePaused){
+			showDeveloperMenu=false;
+			checkPassword=false;
+		}
+		else if(Input.GetKeyDown(KeyCode.O)&&developerMode){
 			showDeveloperMenu=!showDeveloperMenu;
 			if(Time.timeScale!=0) Time.timeScale=0;
 			else Time.timeScale=1;
 		}
-		if(Input.GetKeyUp(KeyCode.KeypadMultiply)&&!showDeveloperMenu){
+		else if(Input.GetKeyUp(KeyCode.KeypadMultiply)&&!showDeveloperMenu){
 			checkPassword=true;
 			Time.timeScale=0;
 		}
-		if(Input.GetKeyDown(KeyCode.Escape)){
+		 else if(Input.GetKeyDown(KeyCode.Escape)){
 			checkPassword=false;
 			showDeveloperMenu=false;
 			Time.timeScale=1;
